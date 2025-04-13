@@ -1,3 +1,4 @@
+from os import path
 import flet as ft
 
 class RegisterTextBox(ft.TextField):
@@ -25,9 +26,9 @@ class ShelterSignUp(ft.View):
         self.error_message_color = ft.Colors.RED
         self.error_border_color = ft.Colors.RED
 
-        #Styling
+        #Content
         self.image = ft.Image(
-            src='./static/cat1.jpg', 
+            src = path.join(path.dirname(__file__), "static", "cat1.jpg"),
             height=1000,
             width=805,
             fit=ft.ImageFit.COVER
@@ -201,18 +202,18 @@ class ShelterSignUp(ft.View):
 
         self.controls = [
             ft.Container(
+                content = ft.Row(
+                    controls=[
+                        self.MainView
+                    ],
+                    alignment= ft.MainAxisAlignment.CENTER
+                ),
                 expand = True,
                 gradient = ft.LinearGradient(
                     colors = ['#F06449', '#FFAA0C'], 
                     begin = ft.alignment.top_right, 
                     end = ft.alignment.bottom_left
                 ),
-                content = ft.Row(
-                    controls=[
-                        self.MainView
-                    ],
-                    alignment= ft.MainAxisAlignment.CENTER
-                )
             )
         ]
 
@@ -272,4 +273,5 @@ def main(page: ft.Page):
     page.on_route_change = route_change
     page.go("/")
 
-ft.app(main)
+if __name__ == "__main__":
+    ft.app(main)
