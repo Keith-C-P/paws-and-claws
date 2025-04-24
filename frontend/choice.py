@@ -8,10 +8,10 @@ class BackgroundOnly(ft.View):
 
         # Set up static asset paths
         base_path = path.dirname(__file__)
-        left_image_path = path.join(base_path, "static", "2f277a9f-fd50-46aa-aaeb-333d4d0c771e.png")
-        paw_image_path = path.join(base_path, "static", "c3450441-97b4-48d5-b212-39887e5b0691.png")
+        left_image_path = path.join(base_path, "static", "left_background.png")
+        paw_image_path = path.join(base_path, "static", "paw1.png")
         paw_svg_path = path.join(base_path, "static", "paw.svg")
-        paw_image2_path = path.join(base_path, "static", "6e58825a-35b0-4ba8-9427-b229819d284a.png")
+        paw_image2_path = path.join(base_path, "static", "paw2.png")
 
         # --- LEFT (Business) Panel ---
         left_image = ft.Container(
