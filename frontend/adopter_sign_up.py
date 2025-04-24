@@ -31,20 +31,50 @@ class AdopterSignUp(ft.View):
             src = path.join(path.dirname(__file__), "static", "doggo.png"), # TODO remove watermark + align image properly
             height=1000,
             width=900,
-            fit=ft.ImageFit.COVER,
+            fit=ft.ImageFit.FIT_HEIGHT,
             #offset=ft.Offset(0.1, 0),
             #alignment = ft.alignment.center_left,
         )
         
         self.image_overlay_text = ft.Container(
         content=ft.Text(
-        value="  PAWS & CLAWS",  # Change this text as needed
-        size=40,
-        color=ft.Colors.BLACK,
-        weight=ft.FontWeight.NORMAL,
-        font_family="Inria Serif",
-        #left=20,
-        #top=10,
+            spans=[
+                ft.TextSpan(
+                    text="PAWS",
+                    style=ft.TextStyle(
+                        size=40, 
+                        color=ft.Colors.BLACK, 
+                        weight=ft.FontWeight.NORMAL, 
+                        font_family="Inria Serif", 
+                    ),
+                ),
+                ft.TextSpan(
+                    text=" & ",
+                    style=ft.TextStyle(
+                        size=40, 
+                        color="#F06449", 
+                        weight=ft.FontWeight.NORMAL, 
+                        font_family="Inria Serif", 
+                    ),
+                ),
+                ft.TextSpan(
+                    text="CLAWS",
+                    style=ft.TextStyle(
+                        size=40, 
+                        color=ft.Colors.BLACK, 
+                        weight=ft.FontWeight.NORMAL, 
+                        font_family="Inria Serif", 
+                    ),
+                ),
+            ],
+            offset=ft.Offset(0.1, 0.1),
+        ),
+        image=ft.Image(
+            src=path.join(path.dirname(__file__), "static", "paw.png"), # TODO make the paw show up
+            width=100,
+            height=100,
+            fit=ft.ImageFit.CONTAIN,
+            #offset=ft.Offset(0,0),
         ),
         alignment=ft.alignment.top_left,
         padding=10
@@ -56,11 +86,11 @@ class AdopterSignUp(ft.View):
             self.image,
             self.image_overlay_text
         ],
-        width=900,
+        width=805,
         height=1000
         ),
         padding=0,
-        width=900,
+        width=805,
         border_radius=ft.BorderRadius(10, 0, 10, 0),
         bgcolor=ft.Colors.BLACK,
         )
