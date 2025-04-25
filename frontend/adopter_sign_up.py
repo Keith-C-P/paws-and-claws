@@ -1,6 +1,7 @@
 from os import path
+from database import add_adopter
 import flet as ft
-
+import re
 class RegisterTextBox(ft.TextField):
     def __init__(self, label: str, hint_text: str| None = None, password: bool | None = None, on_change: ft.OptionalEventCallable = None):
         super().__init__(
@@ -20,7 +21,7 @@ class RegisterTextBox(ft.TextField):
         self.valid = False
 
 class AdopterSignUp(ft.View):
-    def __init__(self, titletext: str = "Sign Up"):
+    def __init__(self, page: ft.Page):
         super().__init__("/")
 
         self.error_message_color = ft.Colors.RED
@@ -35,7 +36,7 @@ class AdopterSignUp(ft.View):
             #offset=ft.Offset(0.1, 0),
             #alignment = ft.alignment.center_left,
         )
-        
+
         self.image_overlay_text = ft.Container(
         content=ft.Text(
             spans=[
@@ -97,7 +98,7 @@ class AdopterSignUp(ft.View):
 
         self.TitleText = ft.ShaderMask(
             content=ft.Text(
-                value=titletext,
+                value="Sign Up",
                 font_family="Inter",
                 size=40,
                 color=ft.Colors.WHITE,
@@ -179,7 +180,13 @@ class AdopterSignUp(ft.View):
             on_hover=self.on_hover_register,
         )
 
-        self.error_message = ft.Text(value="", 
+        self.form1_error_message = ft.Text(value="", 
+            font_family="Inter", 
+            size="12", 
+            color=ft.Colors.RED
+        )
+
+        self.form2_error_message = ft.Text(value="", 
             font_family="Inter", 
             size="12", 
             color=ft.Colors.RED
@@ -198,7 +205,7 @@ class AdopterSignUp(ft.View):
                     self.password,
                     self.confirm_password,
                     self.next_button,
-                    self.error_message
+                    self.form1_error_message
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
             ),
@@ -207,6 +214,7 @@ class AdopterSignUp(ft.View):
             alignment= ft.alignment.center,
             # bgcolor= ft.Colors.BLACK,
         )
+
         self.Form2 = ft.Container( # add register button
             content = ft.Column(
                 controls= [
@@ -228,7 +236,7 @@ class AdopterSignUp(ft.View):
                         ],
                         alignment= ft.MainAxisAlignment.SPACE_BETWEEN
                     ),
-                    self.error_message,
+                    self.form2_error_message,
                 ],
                 alignment=ft.MainAxisAlignment.CENTER
             ),
@@ -261,7 +269,6 @@ class AdopterSignUp(ft.View):
             )
             # expand = True,
         )
-        
 
         self.controls = [
             ft.Container(
@@ -280,8 +287,36 @@ class AdopterSignUp(ft.View):
             )
         ]
 
+    def form1_validation(self):
+        if not (self.first_name.value and self.last_name.value and self.email.value and self.password.value and self.confirm_password.value):
+            self.error("Empty fields not permitted")
+            return False
+        if not re.fullmatch(r"^[^@]+@[^@]+\.[^@]+$", self.email.value):
+            self.error("Invalid email")
+            return False
+        if len(self.password.value) <= 4:
+            self.error("Password too short")
+            return False
+        if self.password.value != self.confirm_password.value:
+            self.error("Password and Confirm Password fields dont match")
+            return False
+        self.error(" ")
+        return True
+
+    def form2_validation(self):
+        if not (self.house.value and self.street.value and self.area.value and self.city.value and self.pincode.value and self.phone.value):
+            self.error("Empty fields not permitted")
+            return False
+        if not self.pincode.value.isnumeric():
+            self.error("Invalid Pincode")
+        if not self.phone.value.isnumeric() and len(self.phone.value) != 10:
+            self.error("Invalid Phone Number")
+        self.error(" ")
+        return True
+
     def on_click_next(self, e: ft.ControlEvent):
-        self.switch_form()
+        if self.form1_validation():
+            self.switch_form()
 
     def on_click_back(self, e: ft.ControlEvent):
         self.switch_form()
@@ -319,10 +354,18 @@ class AdopterSignUp(ft.View):
             e.control.update()
 
     def on_click_register(self, e: ft.ControlEvent): #TODO implement form validation and re-route to login
-        pass
-    
+        if self.form2_validation():
+            address = f"{self.house.value }, { self.street.value }, { self.area.value }, { self.city.value }, { self.pincode.value}"
+            add_adopter(self.first_name.value, self.last_name.value, address, self.phone.value, "NULL", self.email.value, self.password.value)
+            self.page.go("/login")
+
     def error(self, message: str):
-        self.error_message.value = message
+        if self.MainView.content.controls[1] == self.Form1:
+            self.form1_error_message.value = message
+            self.form1_error_message.update()
+        else:
+            self.form2_error_message.value = message
+            self.form2_error_message.update()
 
 def main(page: ft.Page):
     page.fonts = {

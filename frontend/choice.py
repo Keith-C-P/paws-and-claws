@@ -2,8 +2,8 @@ import flet as ft
 from os import path
 from math import pi
 
-class BackgroundOnly(ft.View):
-    def __init__(self):
+class Choice(ft.View):
+    def __init__(self, page: ft.Page):
         super().__init__("/")
 
         # Set up static asset paths
@@ -133,13 +133,6 @@ class BackgroundOnly(ft.View):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
 
-    def on_click_signup_redirect(self, e):
-        print("Redirect to sign up...")
-
-    def on_hover_signup_text(self, e: ft.ControlEvent):
-        self.signup_text.color = "#F06449" if e.data == "true" else "#000000"
-        self.signup_text.update()
-
     # --- Business Panel ---
     def create_business_ui(self):
         return ft.Column(
@@ -147,7 +140,7 @@ class BackgroundOnly(ft.View):
                 ft.Container(content=self.create_business_badge(), alignment=ft.alignment.top_center, padding=ft.padding.only(top=65)),
                 self.create_title_row("For", "Shelters"),
                 self.create_login_button("Login", self.on_click_business_login),
-                self.create_contact_text(),
+                self.create_shelter_sign_up_text(),
             ],
             alignment=ft.MainAxisAlignment.START,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -165,13 +158,13 @@ class BackgroundOnly(ft.View):
             margin=ft.padding.symmetric(horizontal=20, vertical=10),
         )
 
-    def create_contact_text(self):
-        self.contact_text = ft.Text("Contact Us", size=14, color="#000000", weight=ft.FontWeight.BOLD)
+    def create_shelter_sign_up_text(self):
+        self.shelter_sign_up = ft.Text("Sign up", size=14, color="#000000", weight=ft.FontWeight.BOLD)
         return ft.Column(
             controls=[
                 ft.Text("Don't have an account?", size=14, color="#202020", text_align=ft.TextAlign.CENTER),
                 ft.Container(
-                    content=self.contact_text,
+                    content=self.shelter_sign_up,
                     on_click=self.on_click_contact,
                     on_hover=self.on_hover_contact_text,
                     alignment=ft.alignment.center,
@@ -180,14 +173,7 @@ class BackgroundOnly(ft.View):
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
-
-    def on_click_contact(self, e):
-        print("Redirect to contact page...")
-
-    def on_hover_contact_text(self, e: ft.ControlEvent):
-        self.contact_text.color = "#F06449" if e.data == "true" else "#000000"
-        self.contact_text.update()
-
+    
     # --- Shared Components ---
     def create_title_row(self, prefix, label):
         return ft.Row(
@@ -212,12 +198,25 @@ class BackgroundOnly(ft.View):
             on_click=click_handler,
         )
 
+    def on_click_signup_redirect(self, e):
+        self.page.go("/adopter-sign-up")
+
+    def on_hover_signup_text(self, e: ft.ControlEvent):
+        self.signup_text.color = "#F06449" if e.data == "true" else "#000000"
+        self.signup_text.update()
+
+    def on_click_contact(self, e):
+        self.page.go("/shelter-sign-up")
+
+    def on_hover_contact_text(self, e: ft.ControlEvent):
+        self.shelter_sign_up.color = "#F06449" if e.data == "true" else "#000000"
+        self.shelter_sign_up.update()
+
     def on_click_login(self, e):
-        print("Adopter logged in!")
+        self.page.go("/login")
 
     def on_click_business_login(self, e):
-        print("Shelter logged in!")
-
+        self.page.go("/login")
 
 # --- Entry Point ---
 def main(page: ft.Page):
@@ -228,14 +227,13 @@ def main(page: ft.Page):
     def route_change(e: ft.RouteChangeEvent):
         page.views.clear()
         if e.route == "/":
-            view = BackgroundOnly()
+            view = Choice(page)
             view.page = page
             page.views.append(view)
         page.update()
 
     page.on_route_change = route_change
     page.go("/")
-
 
 if __name__ == "__main__":
     ft.app(main)
